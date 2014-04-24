@@ -32,7 +32,7 @@ import java.io.InputStream;
  * Description: TODO.
  * </p>
  * 
- * @author Zouxiaobo(zouxiaobo@hisense.com) 2013-11-5.
+ * @author Zouxiaobo(zeroapp@126.com) 2013-11-5.
  * @version $Id$
  */
 public class UpgradeUIBuilder {

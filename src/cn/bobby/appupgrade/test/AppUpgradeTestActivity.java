@@ -22,7 +22,7 @@ import cn.bobby.appupgrade.impl.OnNewVersionListener;
  * <p>Title: TODO.</p>
  * <p>Description: TODO.</p>
  *
- * @author Bobby Zou(zouxiaobo@hisense.com) 2014-3-5.
+ * @author Bobby Zou(zeroapp@126.com) 2014-3-5.
  * @version $Id$
  */
 

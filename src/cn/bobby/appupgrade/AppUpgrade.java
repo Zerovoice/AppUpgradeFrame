@@ -14,7 +14,7 @@ import android.util.Log;
  * Description: TODO.
  * </p>
  * 
- * @author Bobby Zou(zouxiaobo@hisense.com) 2014-3-5.
+ * @author Bobby Zou(zeroapp@126.com) 2014-3-5.
  * @version $Id$
  */
 public class AppUpgrade {
