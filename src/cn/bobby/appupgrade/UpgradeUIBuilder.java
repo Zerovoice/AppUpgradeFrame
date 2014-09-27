@@ -1,6 +1,7 @@
 
 package cn.bobby.appupgrade;
 
+import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -11,6 +12,13 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.Toast;
+
+import cn.bobby.appupgrade.interfaces.IUpgradeInfoLinstener;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -26,16 +34,16 @@ import java.io.InputStream;
 
 /**
  * <p>
- * Title: TODO.
+ * Title: .
  * </p>
  * <p>
- * Description: TODO.
+ * Description: .
  * </p>
  * 
  * @author Zouxiaobo(zeroapp@126.com) 2013-11-5.
  * @version $Id$
  */
-public class UpgradeUIBuilder {
+public class UpgradeUIBuilder implements IUpgradeInfoLinstener {
 
     private static final String TAG = "AppUpgrade";
     public static final int NOTIFY_ID = 0;
@@ -49,12 +57,10 @@ public class UpgradeUIBuilder {
     private String mAppUpgradeURL = "";
     private String pkgPath = "";
 
-    // AppUpgrade broadcastReceiver actions
-    public static final String ACTION_UPGRADE_DOWNLOAD_BEGIN = "com.appupgrade.downloadbegin";
-    public static final String ACTION_UPGRADE_DOWNLOAD_SUCCESS = "com.appupgrade.downloadsuccess";
-    public static final String ACTION_UPGRADE_NETWORK_DISCONNECTED = "com.appupgrade.networkdisconnected";
-    public static final String ACTION_UPGRADE_IOEXCEPTION = "com.appupgrade.ioexception";
-
+    public static final int ACTION_UPGRADE_DOWNLOAD_BEGIN = 1;
+    public static final int ACTION_UPGRADE_DOWNLOAD_SUCCESS = 2;
+    public static final int ACTION_UPGRADE_NETWORK_DISCONNECTED = 9;
+    public static final int ACTION_UPGRADE_IOEXCEPTION = 10;
 
     private Handler progressHandler = new Handler() {
 
@@ -94,7 +100,7 @@ public class UpgradeUIBuilder {
                                 "New version available", contentIntent);
                         // 最后别忘了通知一下,否则不会更新
                         mNotificationManager.notify(NOTIFY_ID, mNotification);
-                        mContext.sendBroadcast(new Intent(ACTION_UPGRADE_DOWNLOAD_SUCCESS));
+                        onInfo(ACTION_UPGRADE_DOWNLOAD_SUCCESS);
                     }
                     break;
                 case 0:
@@ -116,7 +122,7 @@ public class UpgradeUIBuilder {
     }
 
     public void downloadNewApp() {
-        mContext.sendBroadcast(new Intent(ACTION_UPGRADE_DOWNLOAD_BEGIN));
+        onInfo(ACTION_UPGRADE_DOWNLOAD_BEGIN);
         setUpNotification();
         new Thread() {
             public void run() {
@@ -227,10 +233,10 @@ public class UpgradeUIBuilder {
             }
         } catch (ClientProtocolException e) {
             e.printStackTrace();
-            mContext.sendBroadcast(new Intent(ACTION_UPGRADE_NETWORK_DISCONNECTED));
+            onInfo(ACTION_UPGRADE_NETWORK_DISCONNECTED);
         } catch (IOException e) {
             e.printStackTrace();
-            mContext.sendBroadcast(new Intent(ACTION_UPGRADE_IOEXCEPTION));
+            onInfo(ACTION_UPGRADE_IOEXCEPTION);
         }
     }
 
@@ -250,9 +256,9 @@ public class UpgradeUIBuilder {
             Log.i(TAG, "file readable --" + readable);
             boolean writable = updateFile.setWritable(true, false);
             Log.i(TAG, "file writable--" + writable);
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
-            mContext.sendBroadcast(new Intent(ACTION_UPGRADE_IOEXCEPTION));
+            onInfo(ACTION_UPGRADE_IOEXCEPTION);
         }
 
     }
@@ -283,6 +289,68 @@ public class UpgradeUIBuilder {
         }
     }
 
+    @Override
+    public void onInfo(int info) {
+        switch (info) {
+            case ACTION_UPGRADE_DOWNLOAD_BEGIN:
+                makeToast(mContext, R.drawable.upgrade_toast_media, R.string.downloading_new_apk)
+                        .show();
+                break;
+            case ACTION_UPGRADE_DOWNLOAD_SUCCESS:
+                makeToast(mContext, R.drawable.upgrade_toast_media, R.string.downloading_success)
+                        .show();
+                break;
+            case ACTION_UPGRADE_NETWORK_DISCONNECTED:
+                makeToast(mContext, R.drawable.upgrade_toast_warning,
+                        R.string.downloading_terminated).show();
+                break;
+            case ACTION_UPGRADE_IOEXCEPTION:
+                makeToast(mContext, R.drawable.upgrade_toast_warning,
+                        R.string.downloading_terminated).show();
+                break;
+
+            default:
+                break;
+        }
+
+    }
+
+    /**
+     * <p>
+     * Title: To make a Toast used specified ImageResource.
+     * </p>
+     * <p>
+     * Description: To make a Toast used specified ImageResource.
+     * </p>
+     * 
+     * @param context
+     * @param imageResId
+     * @param textResId
+     * @return the required toast;
+     */
+    @SuppressLint("ShowToast")
+    public static Toast makeToast(Context context, int imageResId, int textResId) {
+        // 创建一个Toast提示消息
+        // Toast toast = new Toast(context);
+        Toast toast = Toast.makeText(context, textResId, Toast.LENGTH_LONG);
+        // 设置Toast提示消息在屏幕上的位置
+        // toast.setGravity(Gravity.CENTER, 0, 0);
+        // 获取Toast提示消息里原有的View
+        View toastView = toast.getView();
+        // 创建一个ImageView
+        ImageView img = new ImageView(context);
+        img.setImageResource(imageResId);
+        // 创建一个LineLayout容器
+        LinearLayout ll = new LinearLayout(context);
+        ll.setGravity(Gravity.CENTER);
+        // 向LinearLayout中添加ImageView和Toast原有的View
+        ll.addView(img);
+        ll.addView(toastView);
+        // 将LineLayout容器设置为toast的View
+        toast.setView(ll);
+
+        return toast;
+    }
 
 
 }

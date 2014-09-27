@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2011 zeroapp Electric Co., Ltd. 
+ * Copyright (C)  . 
  * All Rights Reserved.
  *
  * ALL RIGHTS ARE RESERVED BY zeroapp ELECTRIC CO., LTD. ACCESS TO THIS

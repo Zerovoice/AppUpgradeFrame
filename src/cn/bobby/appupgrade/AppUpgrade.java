@@ -8,10 +8,10 @@ import android.util.Log;
 
 /**
  * <p>
- * Title: TODO.
+ * Title: .
  * </p>
  * <p>
- * Description: TODO.
+ * Description: .
  * </p>
  * 
  * @author Bobby Zou(zeroapp@126.com) 2014-3-5.
@@ -29,6 +29,8 @@ public class AppUpgrade {
     private String token = "";
     private String packageName = "";
     
+    // appUpgradeReply should contain all info about the new apk.
+    private Object appUpgradeReply = null;
     
     public AppUpgrade(Context context){
     	this.context = context;
@@ -77,6 +79,7 @@ public class AppUpgrade {
                 }
             }   
         }
+//        getappUpgradeReply();
         final int oldVerCode = getOldVerCode(context);
         final int newVerCode = getnewVerCode();
         Log.d(TAG, "oldVerCode:" + oldVerCode + "^^newVerCode:" + newVerCode);
@@ -169,7 +172,7 @@ public class AppUpgrade {
             // TODO: TESTING mode!You MUST get newest version name from server.
             return "Testing Version";
         }
-		return null;
+        return "";
 	}
 
     /**
@@ -208,7 +211,7 @@ public class AppUpgrade {
             // from server here.
             return "This is a testing version!";
         }
-        return null;
+        return "";
 	}
 
     /**
@@ -247,7 +250,27 @@ public class AppUpgrade {
                                                                                                           // url
             return url;
         }
-		return null;
+        return "";
 	}
+
+    private void getappUpgradeReply() {
+        packageName = context.getApplicationInfo().packageName;// 由context获得包名
+        try {
+            token = getToken();
+        } catch (Exception e) {
+            Log.i(TAG, "getToken catch Exception");
+            e.printStackTrace();
+        }
+        Log.i(TAG, "appKey:" + appKey + "-----appSecret:" + appSecret + "-----packageName:"
+                + packageName + "-----token:" + token);
+
+        appUpgradeReply = null;// TODO use token to get appUpgradeReply
+        Log.i(TAG, "appUpgradeReply is  " + appUpgradeReply);
+    }
+
+    private String getToken() {
+        // TODO use appKey & appSecret to get token
+        return "";
+    }
 	
 }
